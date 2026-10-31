@@ -1,0 +1,86 @@
+{
+  "name": "yt-dlp-gui-studio",
+  "version": "1.0.0",
+  "description": "yt-dlp-GUI Studio App — an unofficial desktop GUI for the yt-dlp downloader",
+  "main": "app/main.js",
+  "author": "Jakandev",
+  "license": "MIT",
+  "private": true,
+  "homepage": "https://github.com/Jakandev/yt-dlp-gui-studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jakandev/yt-dlp-gui-studio.git"
+  },
+  "keywords": [
+    "yt-dlp",
+    "gui",
+    "downloader",
+    "electron",
+    "windows"
+  ],
+  "scripts": {
+    "start": "electron .",
+    "fetch-engines": "node scripts/fetch-engines.js",
+    "build:installer": "electron-builder --win nsis",
+    "build:portable": "electron-builder --win portable",
+    "build": "npm run build:installer && npm run build:portable"
+  },
+  "devDependencies": {
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "io.github.jakandev.ytdlpguistudio",
+    "productName": "yt-dlp-GUI Studio App",
+    "copyright": "yt-dlp-GUI Studio App contributors",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "app/**/*",
+      "package.json",
+      "LICENSE",
+      "THIRD-PARTY-NOTICES.md",
+      "!**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": "bin",
+        "to": "bin"
+      }
+    ],
+    "asar": true,
+    "compression": "normal",
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "yt-dlp-GUI Studio App",
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "yt-dlp-GUI-Studio-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "yt-dlp-GUI-Studio-Portable-${version}.${ext}"
+    }
+  }
+}

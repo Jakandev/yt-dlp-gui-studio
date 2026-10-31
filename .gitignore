@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Engines — downloaded with `npm run fetch-engines`, never committed
+bin/
+
+# Build output
+dist/
+release/
+
+# App data (portable builds keep their data next to the exe)
+yt-dlp-studio-data/
+cookies/
+thumbs/
+settings.json
+queue.json
+
+# Logs and debug dumps
+*.log
+*.dump
+
+# Editor / OS noise
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

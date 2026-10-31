@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-accent="violet">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self' https:;" />
+  <title>yt-dlp-GUI Studio App</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="win">
+  <!-- ── titlebar ────────────────────────────────────────────── -->
+  <header class="titlebar">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 19h16"/></svg>
+    </div>
+    <div class="brand">yt-dlp-GUI <span>Studio</span></div>
+    <div class="tb-spacer"></div>
+    <div class="tb-chip" id="chipEngines"><span class="dot"></span> engines ready</div>
+    <div class="tb-chip" id="chipVersion">yt-dlp …</div>
+    <div class="wbtns">
+      <div class="wb" id="btnMin" title="Minimise">&#9472;</div>
+      <div class="wb" id="btnMax" title="Maximise">&#9723;</div>
+      <div class="wb close" id="btnClose" title="Close">&#10005;</div>
+    </div>
+  </header>
+
+  <div class="body">
+    <!-- ── sidebar ───────────────────────────────────────────── -->
+    <aside class="rail">
+      <div class="lbl">Workspace</div>
+      <button class="nav on" data-view="download">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 4v11m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+        New download
+      </button>
+      <button class="nav" data-view="queue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="4" rx="1.5"/><rect x="3" y="11" width="18" height="4" rx="1.5"/><rect x="3" y="18" width="12" height="3" rx="1.5"/></svg>
+        Queue <span class="badge hidden" id="queueBadge">0</span>
+      </button>
+      <button class="nav" data-view="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+        History <span class="cnt" id="historyCount">0</span>
+      </button>
+      <div class="lbl">Library</div>
+      <button class="nav" data-view="presets">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+        Presets <span class="cnt" id="presetCount">0</span>
+      </button>
+      <button class="nav" data-view="options">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h6"/><circle cx="18" cy="16" r="3"/></svg>
+        All options
+      </button>
+      <button class="nav" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1A1.7 1.7 0 007 19.4a1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H1a2 2 0 110-4h.1A1.7 1.7 0 002.6 7a1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H7a1.7 1.7 0 001-1.5V1a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V7a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+        Settings
+      </button>
+
+      <div class="rail-foot">
+        <div class="ver"><b id="verText">yt-dlp …</b><br><span id="verSub">checking…</span></div>
+        <button class="upd" id="btnUpdate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg>
+          Check for update
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── main ──────────────────────────────────────────────── -->
+    <main class="main">
+
+      <!-- ═══ VIEW: DOWNLOAD ═══ -->
+      <section class="view" id="view-download">
+        <div class="head">
+          <div>
+            <h1>New download</h1>
+            <div class="sub">Paste a link from 1,700+ supported sites — or drop a file of links</div>
+          </div>
+          <div class="right">
+            <button class="icon-btn" id="btnPaste" title="Paste from clipboard">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="3" width="8" height="4" rx="1.2"/><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-2"/></svg>
+            </button>
+            <button class="icon-btn" id="btnTheme" title="Toggle theme">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4.2"/><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10l1.4 1.4m0-12.8l-1.4 1.4m-10 10L5.6 18.4"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="urlbar">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.5 13.5a4 4 0 005.7 0l3-3a4 4 0 10-5.7-5.7L12 6.2"/><path d="M13.5 10.5a4 4 0 00-5.7 0l-3 3a4 4 0 105.7 5.7l1.5-1.5"/></svg>
+          <input id="urlInput" class="url" type="text" spellcheck="false" autocomplete="off"
+                 placeholder="https://www.youtube.com/watch?v=…   ·   Ctrl+V to paste" />
+          <span class="kbd" id="urlKbd">Ctrl V</span>
+          <button class="btn" id="btnFetch">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v9m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></svg>
+            <span id="fetchLabel">Fetch &amp; analyse</span>
+          </button>
+        </div>
+
+        <div class="content">
+          <div class="col-left">
+            <!-- video / playlist card -->
+            <div class="card video empty" id="videoCard">
+              <div class="halo"></div>
+              <div class="thumb placeholder" id="thumbBox">
+                <img id="thumbImg" alt="" class="hidden" />
+                <div class="ph-ico">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="4.5" width="19" height="15" rx="2.5"/><path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none"/></svg>
+                </div>
+                <div class="q hidden" id="thumbQ">4K</div>
+                <div class="dur hidden" id="thumbDur"></div>
+              </div>
+              <div class="vinfo">
+                <div class="vtitle" id="vTitle">Nothing loaded yet</div>
+                <div class="vchan" id="vChan" style="display:none">
+                  <div class="av" id="vAvatar">?</div>
+                  <span id="vUploader"></span>
+                  <span style="color:var(--txt3)" id="vViews"></span>
+                </div>
+                <div class="chips" id="vChips"></div>
+                <div class="presets" id="presets"></div>
+              </div>
+            </div>
+
+            <!-- formats -->
+            <div class="card fmtcard" id="fmtCard">
+              <div class="sect-h">Available formats <span class="cnt" id="fmtCount"></span>
+                <span class="lnk hidden" id="fmtReset">Use preset</span>
+              </div>
+              <div class="ftable" id="fmtTable">
+                <div class="empty-state" id="fmtEmpty">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>
+                  <div>Paste a link above and press <b>Fetch &amp; analyse</b> to see every available quality.</div>
+                </div>
+              </div>
+              <div class="fmt-foot">
+                <span class="chip" id="chipMerge">Auto-merge with ffmpeg</span>
+                <span class="chip" id="chipSB">SponsorBlock: off</span>
+                <span class="chip" id="chipThumb">Embed thumbnail</span>
+                <span class="est" id="estSize"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- right column -->
+          <div class="side">
+            <div class="card">
+              <div class="panel-t">Download settings</div>
+              <div class="rowx"><span class="k">Container</span>
+                <div class="seg" id="segContainer">
+                  <button data-v="mp4" class="on">MP4</button><button data-v="mkv">MKV</button><button data-v="original">Keep</button>
+                </div>
+              </div>
+              <div class="rowx"><span>Subtitles</span>
+                <span class="v" style="font-size:11px;color:var(--txt3)" id="subsLangs">en, ar</span>
+                <button class="sw" id="swSubs"></button>
+              </div>
+              <div class="rowx"><span>Embed metadata &amp; chapters</span><button class="sw on" id="swMeta"></button></div>
+              <div class="rowx"><span>Thumbnail</span><button class="sw on" id="swThumb"></button></div>
+              <div class="divider"></div>
+              <div class="rowx"><span>Cookies</span>
+                <select class="mini-select" id="selCookies">
+                  <option value="none">none</option>
+                  <option value="chrome">Chrome</option>
+                  <option value="edge">Edge</option>
+                  <option value="firefox">Firefox</option>
+                  <option value="brave">Brave</option>
+                  <option value="opera">Opera</option>
+                  <option value="vivaldi">Vivaldi</option>
+                </select>
+              </div>
+              <div class="rowx"><span>Site cookies</span>
+                <button class="lnkbtn" id="btnPasteCookies2" title="Paste cookies for this site">paste…</button>
+              </div>
+              <div class="rowx"><span>Playlist items</span>
+                <input class="mini-input" id="inpRange" placeholder="all" spellcheck="false" />
+              </div>
+              <div class="rowx"><span>Speed limit</span>
+                <input class="mini-input" id="inpSpeed" placeholder="unlimited" spellcheck="false" />
+              </div>
+              <button class="folder" id="btnFolder">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h6l2 2h10v9a1 1 0 01-1 1H3z"/></svg>
+                <span id="folderText">Downloads\yt-dlp Studio</span>
+              </button>
+              <div class="fhint">Used for the videos you add next. Rows already in the queue keep the folder they were added with — the folder is shown on each row.</div>
+            </div>
+
+            <div class="card queue-card">
+              <div class="sect-h">Queue <span class="cnt" id="queueCount">· 0</span>
+                <span class="lnk" id="lnkClearDone">Clear done</span>
+              </div>
+              <div id="miniQueue" class="mini-queue">
+                <div class="qempty">Nothing downloading.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ VIEW: QUEUE ═══ -->
+      <section class="view hidden" id="view-queue">
+        <div class="head">
+          <div><h1>Queue</h1><div class="sub">Everything waiting, running, finished or failed · click a row to select it, shift-click to select a range</div></div>
+          <div class="right">
+            <label class="selall" title="Select every video that has not started yet"><input type="checkbox" id="chkAllQueued" /> select all</label>
+            <button class="btn ghost sm" id="btnSelFolder" disabled title="Send the selected videos to another folder">Change folder</button>
+            <button class="btn ghost sm" id="btnRetryFailed" disabled title="Put every failed video back in the queue">Retry failed</button>
+            <button class="btn ghost sm" id="btnPauseAll">Pause all</button>
+            <button class="btn ghost sm" id="btnClearDone2">Clear finished</button>
+            <button class="btn ghost sm danger" id="btnRemoveAll" title="Stop every download and empty the queue">Remove all</button>
+          </div>
+        </div>
+        <div class="qfilters" id="qFilters"></div>
+        <div class="card scroll" id="fullQueue"></div>
+      </section>
+      <!-- ═══ VIEW: HISTORY ═══ -->
+      <section class="view hidden" id="view-history">
+        <div class="head">
+          <div><h1>History</h1><div class="sub">Downloads that finished on this machine</div></div>
+          <div class="right"><button class="btn ghost sm" id="btnClearHistory">Clear history</button></div>
+        </div>
+        <div class="card scroll" id="historyList"></div>
+      </section>
+
+      <!-- ═══ VIEW: PRESETS ═══ -->
+      <section class="view hidden" id="view-presets">
+        <div class="head">
+          <div><h1>Presets</h1><div class="sub">Save a combination of settings and reuse it in one click</div></div>
+          <div class="right"><button class="btn sm" id="btnSavePreset">Save current settings as preset</button></div>
+        </div>
+        <div class="card scroll" id="presetList"></div>
+      </section>
+
+      <!-- ═══ VIEW: ALL OPTIONS ═══ -->
+      <section class="view hidden" id="view-options">
+        <div class="head">
+          <div><h1>All options</h1><div class="sub">Every yt-dlp flag, generated from the binary itself — changes apply to the next download</div></div>
+          <div class="right" style="align-items:center;gap:10px">
+            <label class="chk"><input type="checkbox" id="chkChanged" /> only changed</label>
+            <input class="search" id="optSearch" placeholder="Search 290+ options…" spellcheck="false" />
+          </div>
+        </div>
+        <div class="card scroll" id="optGroups"><div class="empty-state"><div>Loading options from yt-dlp…</div></div></div>
+      </section>
+
+      <!-- ═══ VIEW: SETTINGS ═══ -->
+      <section class="view hidden" id="view-settings">
+        <div class="head"><div><h1>Settings</h1><div class="sub">Defaults for every download</div></div></div>
+        <div class="settings-grid">
+          <div class="card pad">
+            <div class="panel-t">Files</div>
+            <label class="fld"><span>Download folder</span>
+              <div class="row">
+                <input class="inp" id="setFolder" readonly />
+                <button class="btn ghost sm" id="btnPickFolder">Change</button>
+              </div>
+            </label>
+            <label class="fld"><span>Filename template</span>
+              <input class="inp" id="setTemplate" spellcheck="false" />
+              <small>Example: <code>%(title)s [%(id)s].%(ext)s</code> — %(uploader)s, %(upload_date)s also work</small>
+            </label>
+            <label class="fld"><span>Audio format (Audio-only preset)</span>
+              <select class="inp" id="setAudioFmt">
+                <option>mp3</option><option>m4a</option><option>flac</option><option>wav</option><option>opus</option><option>best</option>
+              </select>
+            </label>
+            <label class="fld"><span>Subtitles languages</span>
+              <input class="inp" id="setSubLangs" spellcheck="false" placeholder="en,ar" />
+            </label>
+            <div class="swrow"><span>Save subtitles</span><button class="sw" id="setSubs"></button></div>
+            <div class="swrow"><span>Include auto-generated subtitles</span><button class="sw" id="setSubsAuto"></button></div>
+            <div class="swrow"><span>Embed subtitles in the file</span><button class="sw on" id="setSubsEmbed"></button></div>
+          </div>
+
+          <div class="card pad">
+            <div class="panel-t">Network &amp; access</div>
+            <label class="fld"><span>Cookies from browser</span>
+              <select class="inp" id="setCookies">
+                <option value="none">none</option><option value="chrome">Chrome</option><option value="edge">Edge</option>
+                <option value="firefox">Firefox</option><option value="brave">Brave</option><option value="opera">Opera</option><option value="vivaldi">Vivaldi</option>
+              </select>
+              <small>The fix for “Sign in to confirm you’re not a bot”, age-gated and members-only videos.</small>
+            </label>
+            <label class="fld"><span>Speed limit</span>
+              <input class="inp" id="setSpeed" placeholder="e.g. 5M or 800K — empty = unlimited" spellcheck="false" />
+            </label>
+            <label class="fld"><span>Parallel downloads</span>
+              <input class="inp" id="setConcurrency" type="number" min="1" max="8" />
+              <small>How many videos download at the same time. 1 = one after another. 2–3 is a good balance; each one is a separate yt-dlp process.</small>
+            </label>
+            <label class="fld"><span>Parallel fragments</span>
+              <input class="inp" id="setFragments" type="number" min="1" max="16" />
+              <small>Pieces of a single video fetched at once. Higher = faster on fast connections. 1–4 is safe.</small>
+            </label>
+            <label class="fld"><span>Retries</span>
+              <input class="inp" id="setRetries" type="number" min="0" max="50" />
+            </label>
+            <label class="fld"><span>SponsorBlock</span>
+              <select class="inp" id="setSB">
+                <option value="off">off</option><option value="mark">mark segments</option><option value="remove">remove segments</option>
+              </select>
+            </label>
+            <label class="fld"><span>Cookies file (cookies.txt)</span>
+              <div class="row">
+                <input class="inp" id="setCookiesFile" readonly placeholder="none — optional" />
+                <button class="btn ghost sm" id="btnPickCookies">Browse</button>
+              </div>
+              <small>Use this when Chrome refuses (it locks its cookie database while running).</small>
+            </label>
+            <div class="swrow"><span>Paste site cookies</span><button class="btn ghost sm" id="btnPasteCookies">Paste cookies…</button></div>
+            <div class="jars" id="jarList"></div>
+            <div class="swrow"><span>Cloudflare workaround (impersonate Chrome)</span><button class="sw on" id="setImpersonate"></button></div>
+            <div class="swrow"><span>Put playlists / profiles in their own folder</span><button class="sw on" id="setGroupFolders"></button></div>
+            <label class="fld"><span>Preferred video codec</span>
+              <select class="inp" id="setCodec">
+                <option value="h264">H.264 / avc1 — most compatible, biggest file</option>
+                <option value="av1">AV1 / av01 — smallest file</option>
+                <option value="h265">H.265 / hevc — in between</option>
+                <option value="best">No preference — let yt-dlp decide</option>
+              </select>
+              <small>Applies to tube sites that offer several encodings of the same resolution.</small>
+            </label>
+            <label class="fld"><span>Extra arguments</span>
+              <input class="inp" id="setExtra" placeholder="--proxy socks5://127.0.0.1:1080" spellcheck="false" />
+            </label>
+          </div>
+
+          <div class="card pad">
+            <div class="panel-t">Appearance</div>
+            <label class="fld"><span>Theme</span>
+              <div class="seg big" id="segTheme"><button data-v="dark" class="on">Dark</button><button data-v="light">Light</button></div>
+            </label>
+            <label class="fld"><span>Accent</span>
+              <div class="accents" id="accents">
+                <button data-a="violet" class="on" style="--c:#7c6cff"></button>
+                <button data-a="blue" style="--c:#3b82f6"></button>
+                <button data-a="teal" style="--c:#14b8a6"></button>
+                <button data-a="amber" style="--c:#f59e0b"></button>
+                <button data-a="rose" style="--c:#f43f5e"></button>
+              </div>
+            </label>
+            <div class="divider"></div>
+            <div class="panel-t">Engines</div>
+            <div class="eng" id="engList"></div>
+            <p class="muted" style="margin:10px 0 0">Updating yt-dlp never touches the interface or the site support built into this app — those live inside the app itself. Your settings, queue and history are untouched too.</p>
+            <div class="row" style="gap:8px;margin-top:10px">
+              <button class="btn ghost sm" id="btnUpdate2">Check for yt-dlp update</button>
+              <button class="btn ghost sm" id="btnRestoreEngines" title="Put back the yt-dlp that shipped with this build">Restore bundled yt-dlp</button>
+            </div>
+            <p class="muted" style="margin:8px 0 0" id="engVersionLine"></p>
+          </div>
+        </div>
+        <div class="card pad">
+          <div class="panel-t">Your data</div>
+          <p class="muted" style="margin:6px 0 12px">This install keeps everything in <code>%APPDATA%\yt-dlp Studio</code> — queue, history, settings, cookies and thumbnails. It survives app updates, reinstalls and uninstalling.</p>
+          <div class="row" style="gap:8px">
+            <button class="btn ghost sm" id="btnImportPortable">Import from portable build…</button>
+            <button class="btn ghost sm" id="btnOpenData">Open data folder</button>
+          </div>
+        </div>
+        <div class="card pad">
+          <div class="panel-t">Backup &amp; restore</div>
+          <p class="muted" style="margin:6px 0 12px">Save every setting — plus your saved site cookies — into one file, so a new Windows install or a reinstall can get back to the same setup in one click. Download history and the queue are not included.</p>
+          <div class="row" style="gap:8px">
+            <button class="btn ghost sm" id="btnBackupSettings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 19h16"/></svg>
+              Back up settings
+            </button>
+            <button class="btn ghost sm" id="btnRestoreSettings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21V9m0 0l-4 4m4-4l4 4"/><path d="M4 5h16"/></svg>
+              Restore from backup…
+            </button>
+          </div>
+        </div>
+        <div class="card pad about">
+          <div class="panel-t">About</div>
+          <p><b>yt-dlp-GUI Studio App</b> <span id="aboutVersion"></span> — a desktop interface for the yt-dlp downloader engine. All downloading is done by the bundled yt-dlp binary; this app only drives it.</p>
+          <p class="muted">Engines folder: <code id="engDir"></code></p>
+        </div>
+      </section>
+
+      <!-- ── dock ─────────────────────────────────────────────── -->
+      <div class="dock">
+        <div class="txt" id="dockStatus"><b>Idle</b></div>
+        <div class="mini"><i id="dockBar" style="width:0%"></i></div>
+        <div class="txt" id="dockDetail"></div>
+        <div class="sp"></div>
+        <div class="txt" id="dockFree"></div>
+        <button class="btn ghost sm" id="btnPause">Pause all</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="onboarding" class="onboarding hidden">
+  <div class="ob-card">
+    <div class="ob-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5"/><path d="M4 19h16"/></svg>
+    </div>
+    <h2>Welcome to yt-dlp-GUI Studio App</h2>
+    <p class="ob-sub">One thing before you start — where should downloads go?</p>
+    <div class="ob-folder">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7h6l2 2h10v9a1 1 0 01-1 1H3z"/></svg>
+      <span id="obFolder">No folder chosen yet</span>
+    </div>
+    <div class="ob-actions">
+      <button class="btn ghost" id="obChoose">Choose folder…</button>
+      <button class="btn" id="obContinue" disabled>Start using it</button>
+    </div>
+    <p class="ob-hint" id="obHint">Pick any folder — you can change it later in Settings.</p>
+  </div>
+</div>
+
+<div id="cookieModal" class="modal hidden">
+  <div class="modal-box ck-box">
+    <div class="modal-t">Paste cookies for a site</div>
+    <p class="ob-hint">Paste any of these: the <b>Cookie:</b> header from DevTools (F12 → Network → any request → Request Headers), a <b>JSON export</b> from Cookie-Editor / EditThisCookie, or a <b>cookies.txt</b>.</p>
+    <input class="inp" id="ckDomain" placeholder="vimeo.com" spellcheck="false" />
+    <textarea class="inp ck-area" id="ckRaw" spellcheck="false" placeholder="name=value; name2=value2; …"></textarea>
+    <div class="ob-hint" id="ckStatus"></div>
+    <div class="modal-actions">
+      <button class="btn ghost sm" id="ckTest">Test with the link above</button>
+      <button class="btn ghost sm" id="ckCancel">Cancel</button>
+      <button class="btn sm" id="ckSave">Save cookies</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-t" id="modalTitle">Save preset</div>
+    <input class="inp" id="modalInput" placeholder="Preset name" spellcheck="false" />
+    <div class="modal-actions">
+      <button class="btn ghost sm" id="modalCancel">Cancel</button>
+      <button class="btn sm" id="modalOk">Save</button>
+    </div>
+  </div>
+</div>
+
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-t" id="confirmTitle">Are you sure?</div>
+    <p class="ob-hint" id="confirmText"></p>
+    <div class="modal-actions">
+      <button class="btn ghost sm" id="confirmCancel">Cancel</button>
+      <button class="btn sm danger" id="confirmOk">Remove</button>
+    </div>
+  </div>
+</div>
+
+<!-- right-click menu for the address bar -->
+<div id="urlMenu" class="ctx hidden">
+  <button data-act="paste">Paste</button>
+  <button data-act="pastego">Paste &amp; fetch</button>
+  <button data-act="clear">Clear</button>
+</div>
+
+<!-- right-click menu for a queue row -->
+<div id="rowMenu" class="ctx hidden">
+  <button data-act="open">Open link in browser</button>
+  <button data-act="copy">Copy link</button>
+  <button data-act="capture">Play in VK window &amp; download</button>
+  <button data-act="reveal">Show in folder</button>
+</div>
+
+<div id="toasts" class="toasts"></div>
+<div id="dropOverlay" class="drop-overlay hidden">
+  <div class="drop-inner"><b>Drop links here</b><span>one or many, or a .txt file of links</span></div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

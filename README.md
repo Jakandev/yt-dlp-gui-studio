@@ -22,6 +22,11 @@ remaining time and the folder it is being saved to.
 
 ![The queue screen with three downloads, one finished and two running](docs/screenshots/queue.png)
 
+Settings applies a theme and an accent colour the moment you click one — dark or
+light, five accents, no restart.
+
+![Switching accent colours and then switching from dark mode to light mode in Settings](docs/screenshots/settings.gif)
+
 ---
 
 ## What it does

@@ -149,7 +149,6 @@ PayPal — one-off, nothing recurring, and it does not unlock anything.
 
 [![Buy me a coffee](https://img.shields.io/badge/%E2%98%95%20Buy%20me%20a%20coffee-PayPal-ffdd00?style=for-the-badge&labelColor=1c1c1c)](https://paypal.me/maitfx)
 
-or the plain link: <https://paypal.me/maitfx>
 
 ## Licence
 
